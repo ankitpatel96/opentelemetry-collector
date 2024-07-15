@@ -23,13 +23,11 @@ var logsUnmarshaler = &plog.ProtoUnmarshaler{}
 
 type logsRequest struct {
 	ld     plog.Logs
-	pusher consumer.ConsumeLogsFunc
 }
 
-func newLogsRequest(ld plog.Logs, pusher consumer.ConsumeLogsFunc) Request {
+func newLogsRequest(ld plog.Logs) Request {
 	return &logsRequest{
 		ld:     ld,
-		pusher: pusher,
 	}
 }
 
@@ -39,7 +37,7 @@ func newLogsRequestUnmarshalerFunc(pusher consumer.ConsumeLogsFunc) exporterqueu
 		if err != nil {
 			return nil, err
 		}
-		return newLogsRequest(logs, pusher), nil
+		return newLogsRequest(logs), nil
 	}
 }
 
@@ -50,13 +48,9 @@ func logsRequestMarshaler(req Request) ([]byte, error) {
 func (req *logsRequest) OnError(err error) Request {
 	var logError consumererror.Logs
 	if errors.As(err, &logError) {
-		return newLogsRequest(logError.Data(), req.pusher)
+		return newLogsRequest(logError.Data())
 	}
 	return req
-}
-
-func (req *logsRequest) Export(ctx context.Context) error {
-	return req.pusher(ctx, req.ld)
 }
 
 func (req *logsRequest) ItemsCount() int {
@@ -97,7 +91,7 @@ type RequestFromLogsFunc func(context.Context, plog.Logs) (Request, error)
 // requestFromLogs returns a RequestFromLogsFunc that converts plog.Logs into a Request.
 func requestFromLogs(pusher consumer.ConsumeLogsFunc) RequestFromLogsFunc {
 	return func(_ context.Context, ld plog.Logs) (Request, error) {
-		return newLogsRequest(ld, nil), nil
+		return newLogsRequest(ld), nil
 	}
 }
 

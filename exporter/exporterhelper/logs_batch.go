@@ -54,7 +54,7 @@ func mergeSplitLogs(_ context.Context, cfg exporterbatcher.MaxSizeConfig, r1 Req
 			}
 			capacityLeft -= extractedLogs.LogRecordCount()
 			if destReq == nil {
-				destReq = &logsRequest{ld: extractedLogs, pusher: srcReq.pusher}
+				destReq = &logsRequest{ld: extractedLogs}
 			} else {
 				extractedLogs.ResourceLogs().MoveAndAppendTo(destReq.ld.ResourceLogs())
 			}
