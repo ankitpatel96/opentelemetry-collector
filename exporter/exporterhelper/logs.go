@@ -107,7 +107,7 @@ func exportFromPusher(pusher consumer.ConsumeLogsFunc) ExportFunc {
 func NewLogsRequestExporter(
 	_ context.Context,
 	set exporter.Settings,
-	convertFunc RequestFromLogsFunc,
+	converter RequestFromLogsFunc,
 	exportFunc ExportFunc,
 	options ...Option,
 ) (exporter.Logs, error) {
@@ -115,7 +115,7 @@ func NewLogsRequestExporter(
 		return nil, errNilLogger
 	}
 
-	if convertFunc == nil || exportFunc == nil {
+	if converter == nil || exportFunc == nil {
 		return nil, errNilLogsConverter
 	}
 
@@ -125,7 +125,7 @@ func NewLogsRequestExporter(
 	}
 
 	lc, err := consumer.NewLogs(func(ctx context.Context, ld plog.Logs) error {
-		req, cErr := convertFunc(ctx, ld)
+		req, cErr := converter(ctx, ld)
 		if cErr != nil {
 			set.Logger.Error("Failed to convert logs. Dropping data.",
 				zap.Int("dropped_log_records", ld.LogRecordCount()),
