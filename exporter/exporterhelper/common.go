@@ -249,7 +249,7 @@ type baseExporter struct {
 	consumerOptions []consumer.Option
 }
 
-func newBaseExporter(set exporter.Settings, signal component.DataType, osf obsrepSenderFactory, options ...Option) (*baseExporter, error) {
+func newBaseExporter(set exporter.Settings, signal component.DataType, osf obsrepSenderFactory, expFunc ExportFunc, options ...Option) (*baseExporter, error) {
 	obsReport, err := NewObsReport(ObsReportSettings{ExporterID: set.ID, ExporterCreateSettings: set})
 	if err != nil {
 		return nil, err
@@ -262,7 +262,7 @@ func newBaseExporter(set exporter.Settings, signal component.DataType, osf obsre
 		queueSender:   &baseRequestSender{},
 		obsrepSender:  osf(obsReport),
 		retrySender:   &baseRequestSender{},
-		timeoutSender: &timeoutSender{cfg: NewDefaultTimeoutSettings()},
+		timeoutSender: &timeoutSender{cfg: NewDefaultTimeoutSettings(), expFunc: expFunc},
 
 		set:    set,
 		obsrep: obsReport,

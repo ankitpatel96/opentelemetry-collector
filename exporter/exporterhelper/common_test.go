@@ -1,6 +1,5 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
-
 package exporterhelper
 
 import (
@@ -38,7 +37,7 @@ func newNoopObsrepSender(*ObsReport) requestSender {
 }
 
 func TestBaseExporter(t *testing.T) {
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newNoopObsrepSender)
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newNoopObsrepSender, nil)
 	require.NoError(t, err)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
 	require.NoError(t, be.Shutdown(context.Background()))
@@ -46,12 +45,7 @@ func TestBaseExporter(t *testing.T) {
 
 func TestBaseExporterWithOptions(t *testing.T) {
 	want := errors.New("my error")
-	be, err := newBaseExporter(
-		defaultSettings, defaultDataType, newNoopObsrepSender,
-		WithStart(func(context.Context, component.Host) error { return want }),
-		WithShutdown(func(context.Context) error { return want }),
-		WithTimeout(NewDefaultTimeoutSettings()),
-	)
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newNoopObsrepSender, nil, WithStart(func(context.Context, component.Host) error { return want }), WithShutdown(func(context.Context) error { return want }), WithTimeout(NewDefaultTimeoutSettings()))
 	require.NoError(t, err)
 	require.Equal(t, want, be.Start(context.Background(), componenttest.NewNopHost()))
 	require.Equal(t, want, be.Shutdown(context.Background()))
@@ -67,19 +61,15 @@ func checkStatus(t *testing.T, sd sdktrace.ReadOnlySpan, err error) {
 }
 
 func TestQueueOptionsWithRequestExporter(t *testing.T) {
-	bs, err := newBaseExporter(exportertest.NewNopSettings(), defaultDataType, newNoopObsrepSender,
-		WithRetry(configretry.NewDefaultBackOffConfig()))
+	bs, err := newBaseExporter(exportertest.NewNopSettings(), defaultDataType, newNoopObsrepSender, nil, WithRetry(configretry.NewDefaultBackOffConfig()))
 	require.Nil(t, err)
 	require.Nil(t, bs.marshaler)
 	require.Nil(t, bs.unmarshaler)
-	_, err = newBaseExporter(exportertest.NewNopSettings(), defaultDataType, newNoopObsrepSender,
+	_, err = newBaseExporter(exportertest.NewNopSettings(), defaultDataType, newNoopObsrepSender, fakeRequestExporter,
 		WithRetry(configretry.NewDefaultBackOffConfig()), WithQueue(NewDefaultQueueSettings()))
 	require.Error(t, err)
 
-	_, err = newBaseExporter(exportertest.NewNopSettings(), defaultDataType, newNoopObsrepSender,
-		withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})),
-		WithRetry(configretry.NewDefaultBackOffConfig()),
-		WithRequestQueue(exporterqueue.NewDefaultConfig(), exporterqueue.NewMemoryQueueFactory[Request]()))
+	_, err = newBaseExporter(exportertest.NewNopSettings(), defaultDataType, newNoopObsrepSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})), WithRetry(configretry.NewDefaultBackOffConfig()), WithRequestQueue(exporterqueue.NewDefaultConfig(), exporterqueue.NewMemoryQueueFactory[Request]()))
 	require.Error(t, err)
 }
 
@@ -89,7 +79,7 @@ func TestBaseExporterLogging(t *testing.T) {
 	set.Logger = zap.New(logger)
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.Enabled = false
-	bs, err := newBaseExporter(set, defaultDataType, newNoopObsrepSender, WithRetry(rCfg))
+	bs, err := newBaseExporter(set, defaultDataType, newNoopObsrepSender, fakeRequestExporter, WithRetry(rCfg))
 	require.Nil(t, err)
 	sendErr := bs.send(context.Background(), newErrorRequest())
 	require.Error(t, sendErr)

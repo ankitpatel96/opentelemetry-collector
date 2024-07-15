@@ -1,6 +1,5 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
-
 package exporterhelper
 
 import (
@@ -39,8 +38,7 @@ func TestQueuedRetry_DropOnPermanentError(t *testing.T) {
 	qCfg := NewDefaultQueueSettings()
 	rCfg := configretry.NewDefaultBackOffConfig()
 	mockR := newMockRequest(2, consumererror.NewPermanent(errors.New("bad data")))
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender,
-		withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(mockR)), WithRetry(rCfg), WithQueue(qCfg))
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(mockR)), WithRetry(rCfg), WithQueue(qCfg))
 	require.NoError(t, err)
 	ocs := be.obsrepSender.(*observabilityConsumerSender)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
@@ -63,9 +61,7 @@ func TestQueuedRetry_DropOnNoRetry(t *testing.T) {
 	qCfg := NewDefaultQueueSettings()
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.Enabled = false
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, withMarshaler(mockRequestMarshaler),
-		withUnmarshaler(mockRequestUnmarshaler(newMockRequest(2, errors.New("transient error")))),
-		WithQueue(qCfg), WithRetry(rCfg))
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(newMockRequest(2, errors.New("transient error")))), WithQueue(qCfg), WithRetry(rCfg))
 	require.NoError(t, err)
 	ocs := be.obsrepSender.(*observabilityConsumerSender)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
@@ -90,9 +86,7 @@ func TestQueuedRetry_OnError(t *testing.T) {
 	qCfg.NumConsumers = 1
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.InitialInterval = 0
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender,
-		withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})),
-		WithRetry(rCfg), WithQueue(qCfg))
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})), WithRetry(rCfg), WithQueue(qCfg))
 	require.NoError(t, err)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
 	t.Cleanup(func() {
@@ -120,9 +114,7 @@ func TestQueuedRetry_MaxElapsedTime(t *testing.T) {
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.InitialInterval = time.Millisecond
 	rCfg.MaxElapsedTime = 100 * time.Millisecond
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender,
-		withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})),
-		WithRetry(rCfg), WithQueue(qCfg))
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})), WithRetry(rCfg), WithQueue(qCfg))
 	require.NoError(t, err)
 	ocs := be.obsrepSender.(*observabilityConsumerSender)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
@@ -168,9 +160,7 @@ func TestQueuedRetry_ThrottleError(t *testing.T) {
 	qCfg.NumConsumers = 1
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.InitialInterval = 10 * time.Millisecond
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender,
-		withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})),
-		WithRetry(rCfg), WithQueue(qCfg))
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})), WithRetry(rCfg), WithQueue(qCfg))
 	require.NoError(t, err)
 	ocs := be.obsrepSender.(*observabilityConsumerSender)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
@@ -202,9 +192,7 @@ func TestQueuedRetry_RetryOnError(t *testing.T) {
 	qCfg.QueueSize = 1
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.InitialInterval = 0
-	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender,
-		withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})),
-		WithRetry(rCfg), WithQueue(qCfg))
+	be, err := newBaseExporter(defaultSettings, defaultDataType, newObservabilityConsumerSender, nil, withMarshaler(mockRequestMarshaler), withUnmarshaler(mockRequestUnmarshaler(&mockRequest{})), WithRetry(rCfg), WithQueue(qCfg))
 	require.NoError(t, err)
 	ocs := be.obsrepSender.(*observabilityConsumerSender)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
@@ -229,7 +217,7 @@ func TestQueuedRetry_RetryOnError(t *testing.T) {
 func TestQueueRetryWithNoQueue(t *testing.T) {
 	rCfg := configretry.NewDefaultBackOffConfig()
 	rCfg.MaxElapsedTime = time.Nanosecond // fail fast
-	be, err := newBaseExporter(exportertest.NewNopSettings(), component.DataTypeLogs, newObservabilityConsumerSender, WithRetry(rCfg))
+	be, err := newBaseExporter(exportertest.NewNopSettings(), component.DataTypeLogs, newObservabilityConsumerSender, nil, WithRetry(rCfg))
 	require.NoError(t, err)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
 	ocs := be.obsrepSender.(*observabilityConsumerSender)
@@ -250,7 +238,7 @@ func TestQueueRetryWithDisabledRetires(t *testing.T) {
 	set := exportertest.NewNopSettings()
 	logger, observed := observer.New(zap.ErrorLevel)
 	set.Logger = zap.New(logger)
-	be, err := newBaseExporter(set, component.DataTypeLogs, newObservabilityConsumerSender, WithRetry(rCfg))
+	be, err := newBaseExporter(set, component.DataTypeLogs, newObservabilityConsumerSender, nil, WithRetry(rCfg))
 	require.NoError(t, err)
 	require.NoError(t, be.Start(context.Background(), componenttest.NewNopHost()))
 	ocs := be.obsrepSender.(*observabilityConsumerSender)

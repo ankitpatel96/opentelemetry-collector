@@ -68,7 +68,7 @@ type logsExporter struct {
 	consumer.Logs
 }
 
-// NewLogsExporter creates an exporter.Logs that records observability metrics and wraps every request with a Span.
+// // NewLogsExporter creates an exporter.Logs that records observability metrics and wraps every request with a Span.
 func NewLogsExporter(
 	ctx context.Context,
 	set exporter.Settings,
@@ -86,7 +86,7 @@ func NewLogsExporter(
 		withMarshaler(logsRequestMarshaler), withUnmarshaler(newLogsRequestUnmarshalerFunc(pusher)),
 		withBatchFuncs(mergeLogs, mergeSplitLogs),
 	}
-	return NewLogsRequestExporter(ctx, set, requestFromLogs(pusher), append(logsOpts, options...)...)
+	return NewLogsRequestExporter(ctx, set, requestFromLogs(pusher), exportFromPusher(pusher), append(logsOpts, options...)...)
 }
 
 // RequestFromLogsFunc converts plog.Logs data into a user-defined request.
@@ -97,7 +97,13 @@ type RequestFromLogsFunc func(context.Context, plog.Logs) (Request, error)
 // requestFromLogs returns a RequestFromLogsFunc that converts plog.Logs into a Request.
 func requestFromLogs(pusher consumer.ConsumeLogsFunc) RequestFromLogsFunc {
 	return func(_ context.Context, ld plog.Logs) (Request, error) {
-		return newLogsRequest(ld, pusher), nil
+		return newLogsRequest(ld, nil), nil
+	}
+}
+
+func exportFromPusher(pusher consumer.ConsumeLogsFunc) ExportFunc {
+	return func(ctx context.Context, data Request) error {
+		return pusher(ctx, data.(*logsRequest).ld)
 	}
 }
 
@@ -107,24 +113,25 @@ func requestFromLogs(pusher consumer.ConsumeLogsFunc) RequestFromLogsFunc {
 func NewLogsRequestExporter(
 	_ context.Context,
 	set exporter.Settings,
-	converter RequestFromLogsFunc,
+	convertFunc RequestFromLogsFunc,
+	exportFunc ExportFunc,
 	options ...Option,
 ) (exporter.Logs, error) {
 	if set.Logger == nil {
 		return nil, errNilLogger
 	}
 
-	if converter == nil {
+	if convertFunc == nil || exportFunc == nil {
 		return nil, errNilLogsConverter
 	}
 
-	be, err := newBaseExporter(set, component.DataTypeLogs, newLogsExporterWithObservability, options...)
+	be, err := newBaseExporter(set, component.DataTypeLogs, newLogsExporterWithObservability, exportFunc, options...)
 	if err != nil {
 		return nil, err
 	}
 
 	lc, err := consumer.NewLogs(func(ctx context.Context, ld plog.Logs) error {
-		req, cErr := converter(ctx, ld)
+		req, cErr := convertFunc(ctx, ld)
 		if cErr != nil {
 			set.Logger.Error("Failed to convert logs. Dropping data.",
 				zap.Int("dropped_log_records", ld.LogRecordCount()),

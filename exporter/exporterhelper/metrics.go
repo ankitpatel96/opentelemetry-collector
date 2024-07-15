@@ -118,7 +118,7 @@ func NewMetricsRequestExporter(
 		return nil, errNilMetricsConverter
 	}
 
-	be, err := newBaseExporter(set, component.DataTypeMetrics, newMetricsSenderWithObservability, options...)
+	be, err := newBaseExporter(set, component.DataTypeMetrics, newMetricsSenderWithObservability, nil, options...)
 	if err != nil {
 		return nil, err
 	}

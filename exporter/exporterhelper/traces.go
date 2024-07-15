@@ -118,7 +118,7 @@ func NewTracesRequestExporter(
 		return nil, errNilTracesConverter
 	}
 
-	be, err := newBaseExporter(set, component.DataTypeTraces, newTracesExporterWithObservability, options...)
+	be, err := newBaseExporter(set, component.DataTypeTraces, newTracesExporterWithObservability, nil, options...)
 	if err != nil {
 		return nil, err
 	}

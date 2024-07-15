@@ -5,6 +5,7 @@ package exporterhelper
 
 import (
 	"context"
+	"errors"
 	"sync/atomic"
 	"time"
 
@@ -34,7 +35,11 @@ type fakeRequest struct {
 	sink      *fakeRequestSink
 }
 
-func (r *fakeRequest) Export(ctx context.Context) error {
+func fakeRequestExporter(ctx context.Context, req Request) error {
+	r, ok1 := req.(*fakeRequest)
+	if !ok1 {
+		return errors.New("somethings very wrong")
+	}
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
