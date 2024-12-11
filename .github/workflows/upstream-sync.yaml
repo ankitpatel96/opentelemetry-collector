@@ -3,6 +3,7 @@ name: 'Upstream Sync'
 permissions:
   actions: write
   contents: write
+  workflows: write
 
 on:
   schedule:
