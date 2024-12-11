@@ -1,10 +1,5 @@
 name: 'Upstream Sync'
 
-permissions:
-  actions: write
-  contents: write
-  workflows: write
-
 on:
   schedule:
     - cron:  '5 5 * * *'
@@ -28,6 +23,7 @@ jobs:
       - name: Checkout target repo
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
           # optional: set the branch to checkout,
           # sync action checks out your 'target_sync_branch' anyway
           ref:  main
