@@ -11,6 +11,10 @@ on:
         description: 'Sync Upstream test mode'
         type: boolean
         default: false
+      run_gotests:
+        description: 'Run go tests after sync'
+        type: boolean
+        default: false
 
 jobs:
   sync_latest_from_upstream:
@@ -47,12 +51,5 @@ jobs:
 
       # Step 3: Display a sample message based on the sync output var 'has_new_commits'
       - name: New commits found
-        if: steps.sync.outputs.has_new_commits == 'true'
-        run: cat upstream-sync/toplevel.make >> Makefile && cat upstream-sync/common.make >> Makefile.Common
-
-      - name: No new commits
-        if: steps.sync.outputs.has_new_commits == 'false'
-        run: echo "There were no new commits."
-
-      - name: Show value of 'has_new_commits'
-        run: echo ${{ steps.sync.outputs.has_new_commits }}
+        if: steps.sync.outputs.has_new_commits == 'true' || run_gotests
+        run: cat upstream-sync/toplevel.make >> Makefile && cat upstream-sync/common.make >> Makefile.Common && make gotest-junit
