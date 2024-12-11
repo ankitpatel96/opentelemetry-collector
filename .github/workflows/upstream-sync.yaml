@@ -2,6 +2,7 @@ name: 'Upstream Sync'
 
 permissions:
   actions: write
+  contents: read
 
 on:
   schedule:
