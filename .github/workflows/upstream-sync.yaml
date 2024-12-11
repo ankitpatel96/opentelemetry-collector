@@ -1,8 +1,8 @@
 name: 'Upstream Sync'
 
 permissions:
-  actions: read|write
-  contents: read|write
+  actions: write
+  contents: write
 
 on:
   schedule:
