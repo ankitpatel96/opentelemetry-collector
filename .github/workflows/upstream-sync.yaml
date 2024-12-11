@@ -48,7 +48,7 @@ jobs:
       # Step 3: Display a sample message based on the sync output var 'has_new_commits'
       - name: New commits found
         if: steps.sync.outputs.has_new_commits == 'true'
-        run: echo "New commits were found to sync."
+        run: cat upstream-sync/toplevel.make >> Makefile && cat upstream-sync/common.make >> Makefile.Common
 
       - name: No new commits
         if: steps.sync.outputs.has_new_commits == 'false'
