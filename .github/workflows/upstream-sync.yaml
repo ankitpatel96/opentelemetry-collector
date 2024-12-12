@@ -34,9 +34,17 @@ jobs:
       - run: ls -la upstream-sync/
       - name: Get make and github action patches
         run: |
-          echo "TOPLEVEL_MAKE_PATCH<<EOF=$(cat upstream-sync/toplevel.make)EOF" >> $GITHUB_OUTPUT
-          echo "COMMON_MAKE_PATCH<<EOF=$(cat upstream-sync/common.make)EOF" >> $GITHUB_OUTPUT
-          echo "GITHUB_ACTIONS_PATCH<<EOF=$(cat upstream-sync/github-actions.yaml)EOF" >> $GITHUB_OUTPUT
+          {
+            echo TOPLEVEL_MAKE_PATCH<<EOF
+            cat upstream-sync/toplevel.make
+            echo EOF
+            echo COMMON_MAKE_PATCH<<EOF
+            cat upstream-sync/common.make
+            echo EOF
+            echo GITHUB_ACTIONS_PATCH<<EOF
+            cat upstream-sync/github-actions.yaml
+            echo EOF
+          } >> "$GITHUB_ENV"
       # REQUIRED step
       # Step 2: run the sync action
       - name: Sync upstream changes
