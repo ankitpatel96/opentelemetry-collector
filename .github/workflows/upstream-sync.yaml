@@ -31,11 +31,12 @@ jobs:
           ref:  upstream-sync
           # REQUIRED if your upstream repo is private (see wiki)
           persist-credentials: false
+      - run: ls -la upstream-sync/
       - name: Get make and github action patches
         run: |
           echo "TOPLEVEL_MAKE_PATCH=$(cat upstream-sync/toplevel.make)" >> $GITHUB_OUTPUT
           echo "COMMON_MAKE_PATCH=$(cat upstream-sync/common.make)" >> $GITHUB_OUTPUT
-          echo "GITHUB_ACTIONS_PATCH=$(cat upstream-sync/github-actions.patch)" >> $GITHUB_OUTPUT
+          echo "GITHUB_ACTIONS_PATCH=$(cat upstream-sync/github-actions.yaml)" >> $GITHUB_OUTPUT
       # REQUIRED step
       # Step 2: run the sync action
       - name: Sync upstream changes
