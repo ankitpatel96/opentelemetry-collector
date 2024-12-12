@@ -28,10 +28,14 @@ jobs:
           token: ${{ secrets.WORKFLOW_TOKEN }}
           # optional: set the branch to checkout,
           # sync action checks out your 'target_sync_branch' anyway
-          ref:  main
+          ref:  upstream-sync
           # REQUIRED if your upstream repo is private (see wiki)
           persist-credentials: false
-
+      - name: Get make and github action patches
+        run: |
+          echo "TOPLEVEL_MAKE_PATCH=$(cat upstream-sync/toplevel.make)" >> $GITHUB_OUTPUT
+          echo "COMMON_MAKE_PATCH=$(cat upstream-sync/common.make)" >> $GITHUB_OUTPUT
+          echo "GITHUB_ACTIONS_PATCH=$(cat upstream-sync/github-actions.patch)" >> $GITHUB_OUTPUT
       # REQUIRED step
       # Step 2: run the sync action
       - name: Sync upstream changes
@@ -46,11 +50,6 @@ jobs:
 
           # Set test_mode true during manual dispatch to run tests instead of the true action!!
           test_mode: ${{ inputs.sync_test_mode }}
-      - name: Get make and github action patches
-        run: |
-          echo "TOPLEVEL_MAKE_PATCH=$(cat upstream-sync/toplevel.make)" >> $GITHUB_OUTPUT
-          echo "COMMON_MAKE_PATCH=$(cat upstream-sync/common.make)" >> $GITHUB_OUTPUT
-          echo "GITHUB_ACTIONS_PATCH=$(cat upstream-sync/github-actions.patch)" >> $GITHUB_OUTPUT
       - name: Checkout target repo
         uses: actions/checkout@v3
         with:
