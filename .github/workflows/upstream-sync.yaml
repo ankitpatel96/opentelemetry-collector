@@ -75,7 +75,7 @@ jobs:
           # REQUIRED if your upstream repo is private (see wiki)
           persist-credentials: false
       - name: Patch make
-        run: echo "${{ steps.set-vars-from-patches.outputs.TOPLEVEL_MAKE_PATCH }}" >> Makefile && echo "${{ steps.set-vars-from-patches.outputs.COMMON_MAKE_PATCH }}" >> Makefile.Common
+        run: echo '${{ steps.set-vars-from-patches.outputs.TOPLEVEL_MAKE_PATCH }}' >> Makefile && echo '${{ steps.set-vars-from-patches.outputs.COMMON_MAKE_PATCH }}' >> Makefile.Common
       - name: Patch make
         run: echo ${{ steps.set-vars-from-patches.outputs.GITHUB_ACTIONS_PATCH }} >> blah.patch && cat blah.patch
 #      use the yq github action to patch the build-and-test workflow to add the datadog junit upload to the bottom of the unittest-matrix job
