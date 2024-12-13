@@ -88,6 +88,8 @@ jobs:
         run: git status && git diff
       - name: Commit changes
         run: |
+          git config --global user.email "ankit.patel@datadoghq.com"
+          git config --global user.name "Ankit Patel"
           git checkout -b main-upstream-patched
           git add Makefile Makefile.Common .github/workflows/build-and-test.yml
           git commit -m "temporary testing patch" 
