@@ -37,12 +37,12 @@ jobs:
             echo 'TOPLEVEL_MAKE_PATCH<<EOF' >> $GITHUB_OUTPUT
             cat upstream-sync/toplevel.make >> $GITHUB_OUTPUT
             echo 'EOF' >> $GITHUB_OUTPUT
-            echo 'COMMON_MAKE_PATCH<<EOF' >> $GITHUB_OUTPUT
-            cat upstream-sync/common.make >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
-            echo 'GITHUB_ACTIONS_PATCH<<EOF' >> $GITHUB_OUTPUT
-            cat upstream-sync/github-actions.yaml >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
+#            echo 'COMMON_MAKE_PATCH<<EOF' >> $GITHUB_OUTPUT
+#            cat upstream-sync/common.make >> $GITHUB_OUTPUT
+#            echo 'EOF' >> $GITHUB_OUTPUT
+#            echo 'GITHUB_ACTIONS_PATCH<<EOF' >> $GITHUB_OUTPUT
+#            cat upstream-sync/github-actions.yaml >> $GITHUB_OUTPUT
+#            echo 'EOF' >> $GITHUB_OUTPUT
       # REQUIRED step
       # Step 2: run the sync action
       - name: Sync upstream changes
