@@ -22,7 +22,7 @@ jobs:
     name: Sync latest commits from upstream repo
 
     steps:
-      - name: Checkout target repo
+      - name: Checkout upstream-sync
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
@@ -43,6 +43,15 @@ jobs:
             echo 'GITHUB_ACTIONS_PATCH<<EOF' >> $GITHUB_OUTPUT
             cat upstream-sync/github-actions.yaml >> $GITHUB_OUTPUT
             echo 'EOF' >> $GITHUB_OUTPUT
+      - name: Checkout main
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+          # optional: set the branch to checkout,
+          # sync action checks out your 'target_sync_branch' anyway
+          ref:  main
+          # REQUIRED if your upstream repo is private (see wiki)
+          persist-credentials: false
       # REQUIRED step
       # Step 2: run the sync action
       - name: Sync upstream changes
