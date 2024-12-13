@@ -73,13 +73,13 @@ jobs:
           ref: main
           # REQUIRED if your upstream repo is private (see wiki)
           persist-credentials: false
-      # Step 3: Display a sample message based on the sync output var 'has_new_commits'
       - name: Patch make
         run: echo ${{ steps.vars.outputs.TOPLEVEL_MAKE_PATCH }} >> Makefile && echo ${{ steps.vars.outputs.COMMON_MAKE_PATCH }} >> Makefile.Common
+      - name: Patch make
+        run: echo ${{ steps.vars.outputs.GITHUB_ACTIONS_PATCH }} >> blah.patch && cat blah.patch
 #      use the yq github action to patch the build-and-test workflow to add the datadog junit upload to the bottom of the unittest-matrix job
       - name: Patch github actions
         uses: mikefarah/yq@master
         with:
 #        use yq to get the current value of the GITHUB_ACTIONS_PATCH output variable and append the new patch to the end of the file
-#          cmd: echo ${{ steps.vars.outputs.GITHUB_ACTIONS_PATCH }} >> blah.patch && yq e '.jobs.unittest-matrix.steps += load("blah.patch")' .github/workflows/build-and-test.yml && rm blah.patch && echo "ASDFASDF" && cat .github/workflows/build-and-test.yml
-          cmd: echo ${{ steps.vars.outputs.GITHUB_ACTIONS_PATCH }} > blah.patch && cat blah.patch
+          cmd: yq e '.jobs.unittest-matrix.steps += load("blah.patch")' .github/workflows/build-and-test.yml && rm blah.patch && echo "ASDFASDF" && cat .github/workflows/build-and-test.yml
