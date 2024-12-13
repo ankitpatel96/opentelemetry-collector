@@ -1,3 +1,5 @@
+- name: uncommit the patch
+  run: git reset --soft HEAD^
 - name: Upload test results to Datadog
   if: always()
   run: datadog-ci junit upload --service service_name ./junit.xml

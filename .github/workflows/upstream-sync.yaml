@@ -64,7 +64,6 @@ jobs:
           target_repo_token: ${{ secrets.WORKFLOW_TOKEN }}
           upstream_sync_branch: main
           upstream_sync_repo: open-telemetry/opentelemetry-collector
-
           # Set test_mode true during manual dispatch to run tests instead of the true action!!
           test_mode: ${{ inputs.sync_test_mode }}
       - name: Checkout target repo
@@ -72,17 +71,25 @@ jobs:
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
           ref: main
-          # REQUIRED if your upstream repo is private (see wiki)
           persist-credentials: false
+      # need newlines at the end of these patches
       - name: Patch make
         run: echo '${{ steps.set-vars-from-patches.outputs.TOPLEVEL_MAKE_PATCH }}' >> Makefile && echo '${{ steps.set-vars-from-patches.outputs.COMMON_MAKE_PATCH }}' >> Makefile.Common
+      # need newlines at the end of these patches
       - name: Store github actions patch
         run: echo '${{ steps.set-vars-from-patches.outputs.GITHUB_ACTIONS_PATCH }}' >> blah.patch && cat blah.patch
-#      use the yq github action to patch the build-and-test workflow to add the datadog junit upload to the bottom of the unittest-matrix job
+      # use the yq github action to patch the build-and-test workflow to add the datadog junit upload to the bottom of the unittest-matrix job
       - name: Patch github actions from file
         uses: mikefarah/yq@master
         with:
-#        use yq to get the current value of the GITHUB_ACTIONS_PATCH output variable and append the new patch to the end of the file
+      # use yq to get the current value of the GITHUB_ACTIONS_PATCH output variable and append the new patch to the end of the file
           cmd: yq -i e '.jobs.unittest-matrix.steps += load("blah.patch")' .github/workflows/build-and-test.yml && rm blah.patch
       - name: check
         run: git status && git diff
+      - name: Commit changes
+        run: |
+          git checkout -b main-upstream-patched
+          git add Makefile Makefile.Common .github/workflows/build-and-test.yml
+          git commit -m "temporary testing patch" 
+          git push -f main-upstream-patched
+          gh pr create --base main --head main-upstream-patched --title "Test Upstream" --body "This is a PR to test upstream main"
