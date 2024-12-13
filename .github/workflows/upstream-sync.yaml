@@ -84,5 +84,5 @@ jobs:
         with:
 #        use yq to get the current value of the GITHUB_ACTIONS_PATCH output variable and append the new patch to the end of the file
           cmd: yq -i e '.jobs.unittest-matrix.steps += load("blah.patch")' .github/workflows/build-and-test.yml && rm blah.patch
-    - name: check
-      run: git status
+      - name: check
+        run: git status
