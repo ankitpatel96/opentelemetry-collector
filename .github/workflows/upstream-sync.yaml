@@ -87,6 +87,8 @@ jobs:
       - name: check
         run: git status && git diff
       - name: Commit changes
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
           git config --global user.email "ankit.patel@datadoghq.com"
           git config --global user.name "Ankit Patel"
