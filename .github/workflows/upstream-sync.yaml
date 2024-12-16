@@ -96,8 +96,6 @@ jobs:
           git add Makefile Makefile.Common .github/workflows/build-and-test.yml
           git commit -m "temporary testing patch"
       - name: push changes
-        env:
-          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
           echo ${{ secrets.WORKFLOW_TOKEN }} | gh auth login --with-token
           git push --set-upstream origin main-upstream-patched
