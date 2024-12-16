@@ -92,14 +92,15 @@ jobs:
         run: |
           git config --global user.name "Ankit Patel"
           git config --global user.email "ankit.patel@datadoghq.com"
-          git checkout -b main-upstream-patched
+          git checkout -b main-upstream-patched-$(date +%Y-%m-%d-%H%M)
           git add Makefile Makefile.Common .github/workflows/build-and-test.yml
           git commit -m "temporary testing patch"
       - name: push changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          git push --set-upstream origin main-upstream-patched
+          git config --global push.default current
+          git push
       - name: pr create changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
