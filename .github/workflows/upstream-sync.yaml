@@ -71,7 +71,7 @@ jobs:
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
           ref: main
-          persist-credentials: false
+          persist-credentials: true
       # need newlines at the end of these patches
       - name: Patch make
         run: echo '${{ steps.set-vars-from-patches.outputs.TOPLEVEL_MAKE_PATCH }}' >> Makefile && echo '${{ steps.set-vars-from-patches.outputs.COMMON_MAKE_PATCH }}' >> Makefile.Common
@@ -99,7 +99,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          echo ${{ secrets.WORKFLOW_TOKEN }} | gh auth login --with-token -v
+          echo ${{ secrets.WORKFLOW_TOKEN }} | gh auth login --with-token
           git push --set-upstream origin main-upstream-patched
       - name: pr create changes
         env:
