@@ -85,7 +85,7 @@ jobs:
       # use yq to get the current value of the GITHUB_ACTIONS_PATCH output variable and append the new patch to the end of the file
           cmd: yq -i e '.jobs.unittest-matrix.steps += load("blah.patch")' .github/workflows/build-and-test.yml && rm blah.patch
       - name: check
-        run: git status && git diff
+        run: git status
       - name: Commit changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
@@ -99,8 +99,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          git remote -v
-          git push
+          git push --set-upstream origin main-upstream-patched
       - name: pr create changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
