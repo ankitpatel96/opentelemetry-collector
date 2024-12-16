@@ -100,7 +100,7 @@ jobs:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
           git remote -v
-          git push -f origin main-upstream-patched
+          git push
       - name: pr create changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
