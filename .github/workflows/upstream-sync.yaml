@@ -99,10 +99,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
+          git remote -v
           git push -f origin main-upstream-patched
       - name: pr create changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          git remote -v
           gh pr create --base main --head main-upstream-patched --title "Test Upstream" --body "This is a PR to test upstream main"
