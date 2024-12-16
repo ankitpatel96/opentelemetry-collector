@@ -94,6 +94,14 @@ jobs:
           git config --global user.email "ankit.patel@datadoghq.com"
           git checkout -b main-upstream-patched
           git add Makefile Makefile.Common .github/workflows/build-and-test.yml
-          git commit -m "temporary testing patch" 
+          git commit -m "temporary testing patch"
+      - name: push changes
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        run: |
           git push -f origin main-upstream-patched
+      - name: pr create changes
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+        run: |
           gh pr create --base main --head main-upstream-patched --title "Test Upstream" --body "This is a PR to test upstream main"
