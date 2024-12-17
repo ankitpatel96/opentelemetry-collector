@@ -105,4 +105,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          gh pr create --base main --head main-upstream-patched --title "Test Upstream" --body "This is a PR to test upstream main"
+          gh pr create --base main --title "Test Upstream" --body "This is a PR to test upstream main"
