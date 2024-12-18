@@ -101,9 +101,8 @@ jobs:
         run: |
           git config --global push.default current
           git push
-          sleep 5
       - name: pr create changes
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          gh pr create --base main --title "Test Upstream" --body "This is a PR to test upstream main"
+          gh pr create --base main --head $(git branch --show-current) --title "Test Upstream" --body "This is a PR to test upstream main"
