@@ -1,5 +1,11 @@
 - name: uncommit the patch
   run: git reset --soft HEAD^
-- name: Upload test results to Datadog
+- uses: datadog/junit-upload-github-action@v1
   if: always()
-  run: datadog-ci junit upload --service service_name ./junit.xml
+  continue-on-error: true
+  with:
+    api-key: ${{ secrets.DD_CI_API_KEY }}
+    service: opentelemetry-collector
+    files: testresults/
+    env:
+      DD_GIT_BRANCH: main
