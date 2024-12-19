@@ -14,5 +14,5 @@
   with:
     api-key: ${{ secrets.DD_CI_API_KEY }}
     service: opentelemetry-collector
-    files: testresults/
+    files: internal/tools/testresults/
 
