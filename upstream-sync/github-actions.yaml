@@ -6,6 +6,8 @@
   run: git reset --soft HEAD^
 - name: status
   run: git status
+- name: ls-files
+  run: git ls-files . --exclude-standard --others
 - uses: datadog/junit-upload-github-action@v1
   if: always()
   continue-on-error: true
