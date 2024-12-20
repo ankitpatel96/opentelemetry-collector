@@ -1,12 +1,17 @@
 - name: status
+  if: always()
   run: git status
 - name: deepen
+  if: always()
   run: git fetch --deepen=2
 - name: uncommit the patch
+  if: always()
   run: git reset --soft HEAD^
 - name: status
+  if: always()
   run: git status
 - name: ls-files
+  if: always()
   run: git ls-files . --exclude-standard --others
 - uses: datadog/junit-upload-github-action@v1
   if: always()
