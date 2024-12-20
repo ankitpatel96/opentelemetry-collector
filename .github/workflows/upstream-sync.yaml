@@ -70,7 +70,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.WORKFLOW_TOKEN }}
-          ref: main
+          # todo change this
+          ref: gotest-junit
           persist-credentials: true
       # need newlines at the end of these patches
       - name: Patch make
