@@ -105,4 +105,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
         run: |
-          gh pr create --base main --head $(git branch --show-current) --title "Test Upstream" --body "This is a PR to test upstream main"
+          gh pr create --base main --head $(git branch --show-current) --title "Test Upstream" --body "This is a PR to test upstream main" -R ankitpatel96/opentelemetry-collector
